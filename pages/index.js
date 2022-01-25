@@ -70,7 +70,7 @@ function Titulo(props) {
         <Box
           styleSheet={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            backgroundColor: appConfig.theme.colors.primary[500],
+            backgroundColor: appConfig.theme.colors.neutrals['300'],
             backgroundImage: 'url(https://images.pexels.com/photos/6712474/pexels-photo-6712474.jpeg)',
             backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
           }}
