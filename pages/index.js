@@ -35,7 +35,7 @@ function Titulo(props) {
       <><Tag>{props.children}</Tag>
         <style jsx>{`
          ${Tag} {
-            color: ${appConfig.theme.colors.neutrals['000']};
+            color: ${appConfig.theme.colors.neutrals['999']};
             fontsize:24;
             weight:600;
           }
@@ -105,10 +105,11 @@ function Titulo(props) {
   
               <TextField
                 fullWidth
+
                 textFieldColors={{
                   neutral: {
-                    textColor: appConfig.theme.colors.neutrals[200],
-                    mainColor: appConfig.theme.colors.neutrals[900],
+                    textColor: appConfig.theme.colors.neutrals['050'],
+                    mainColor: appConfig.theme.colors.neutrals[999],
                     mainColorHighlight: appConfig.theme.colors.primary[500],
                     backgroundColor: appConfig.theme.colors.neutrals[800],
                   },
@@ -119,7 +120,7 @@ function Titulo(props) {
                 label='Entrar'
                 fullWidth
                 buttonColors={{
-                  contrastColor: appConfig.theme.colors.neutrals["000"],
+                  contrastColor: appConfig.theme.colors.neutrals["900"],
                   mainColor: appConfig.theme.colors.primary[500],
                   mainColorLight: appConfig.theme.colors.primary[400],
                   mainColorStrong: appConfig.theme.colors.primary[600],
