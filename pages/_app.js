@@ -7,6 +7,7 @@ function GlobalStyle(){
       padding: 0;
       box-sizing: border-box; from 
       list-style: none;
+      list-decoration:none;
     }
     body {
       font-family: 'Open Sans', sans-serif;
