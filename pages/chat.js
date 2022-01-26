@@ -26,6 +26,11 @@ export default function ChatPage() {
         ]);
         setMensagem('');
     }
+    function botaoMensagem(e){
+        handleNovaMensagem(mensagem);
+        e.preventDefault();
+         
+    }
 
     return (
         <Box
@@ -91,17 +96,31 @@ export default function ChatPage() {
                             placeholder="Insira sua mensagem aqui..."
                             type="textarea"
                             styleSheet={{
+                                
                                 width: '100%',
                                 border: '0',
                                 resize: 'none',
                                 borderRadius: '5px',
                                 padding: '6px 8px',
-                                backgroundColor: appConfig.theme.colors.neutrals[800],
+                                backgroundColor: appConfig.theme.colors.primary[500],
                                 marginRight: '12px',
-                                color: appConfig.theme.colors.neutrals[200],
+                                color: appConfig.theme.colors.neutrals['700'],
                             }}
                         />
+        <Button
+                type='submit'
+                onClick={botaoMensagem}
+                label='Enviar'
+                position='relative'
+                buttonColors={{
+                  contrastColor: appConfig.theme.colors.neutrals["900"],
+                  mainColor: appConfig.theme.colors.primary[500],
+                  mainColorLight: appConfig.theme.colors.primary[400],
+                  mainColorStrong: appConfig.theme.colors.primary[600],
+                }}
+              />
                     </Box>
+            
                 </Box>
             </Box>
         </Box>
