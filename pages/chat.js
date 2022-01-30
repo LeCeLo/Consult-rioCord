@@ -1,31 +1,111 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
-import React, { useImperativeHandle } from 'react';
+import React from 'react';
 import appConfig from '../config.json';
+import {useRouter} from 'next/router';
+import { createClient } from '@supabase/supabase-js'
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
+
+
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzI4NzMxMiwiZXhwIjoxOTU4ODYzMzEyfQ.FeOvmgnbB6mgMXv0Z2Ag1IVQD1auvBhTk3eKCsb9UOU';
+const SUPABASE_URL = 'https://mizsodgdnbfmfbokgkao.supabase.co';
+const supaBaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function escutaMensagensEmTempoReal(adicionaMensagem){
+        returnsupabaseClient
+        .from('mensagens')
+        .on('INSERT', (respostaLive) => {
+          adicionaMensagem(respostaLive.new);
+        })
+        .subscribe();
+    }
+
 
 export default function ChatPage() {
+    const roteamento=useRouter();
+    const usuarioLogado = roteamento.query.username;
     const [mensagem, setMensagem] = React.useState('')
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
+
+
+const dadosDoSupabase = supaBaseClient
+    .from('mensagens')
+    .select('*')
+    .then((dados)=>{
+     
+    });
+console.log (dadosDoSupabase);
+function escutaMensagensEmTempoReal(adicionaMensagem){
+    return supaBaseClient
+    .from('mensagens')
+    .on('INSERT', (respostaLive) =>{
+        adicionaMensagem(respostaLive.new);
+    })
+    .subscribe();
+
+}
+
+    
+
     /*
     // Sua lógica vai aqui
     - usuário digita campo em textarea
-    -Aperta enter para enviar
+     -Aperta enter para enviar
     -Tem que adicionar o texto na listagem
 
 
     // ./Sua lógica vai aqui
     */
+    React.useEffect(() => {
+        supaBaseClient
+          .from('mensagens')
+          .select('*')
+          // console.log('Dados da consulta:', data);
+          .order('id', { ascending: false })
+          .then(({ data }) => {
+            setListaDeMensagens(data);
+          });
+    
+        const subscription = escutaMensagensEmTempoReal((novaMensagem) => {
+          console.log('Nova mensagem:', novaMensagem);
+          console.log('listaDeMensagens:', listaDeMensagens);
+          setListaDeMensagens((valorAtualDaLista) => {
+            console.log('valorAtualDaLista:', valorAtualDaLista);
+            return [
+              novaMensagem,
+              ...valorAtualDaLista,
+            ]
+          });
+        });
+    
+        return () => {
+          subscription.unsubscribe();
+        }
+      }, []);
+
     function handleNovaMensagem(novaMensagem) {
         const mensagem = {
-            id: listaDeMensagens.lenght + 1,
-            de: 'lecelo',
-            texto: novaMensagem,
+            de:usuarioLogado, 
+            texto:novaMensagem,
         };
-        setListaDeMensagens([
-             mensagem,
-            ...listaDeMensagens,
-        ]);
+        supaBaseClient
+        .from('mensagens')
+        .insert([
+            mensagem
+        ])
+        .then(({data})=>{
+            console.log('Criando mensagem: ', data);
+            
+        });
+    
+             
         setMensagem('');
     }
+   /* function apagaMensagem(){
+        supaBaseClient
+        .from('mensagens')
+        .delete()
+        .match({ de:usuarioLogado })
+    };*/
     function botaoMensagem(e){
         handleNovaMensagem(mensagem);
         e.preventDefault();
@@ -42,6 +122,8 @@ export default function ChatPage() {
                 color: appConfig.theme.colors.neutrals['000']
             }}
         >
+            
+          
             <Box
                 styleSheet={{
                     display: 'flex',
@@ -49,31 +131,41 @@ export default function ChatPage() {
                     flex: 1,
                     boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
                     borderRadius: '5px',
-                    backgroundColor: appConfig.theme.colors.neutrals[700],
+                    backgroundColor: appConfig.theme.colors.neutrals[999],
                     height: '100%',
                     maxWidth: '95%',
                     maxHeight: '95vh',
                     padding: '32px',
                 }}
             >
+                        <Image
+                styleSheet={{
+                  width:'70px',  
+                  borderRadius: '50%',
+                 margin:'auto',
+
+                }}
+                src={`https://www.github.com/${usuarioLogado}.png`}
+              /> 
                 <Header />
+             
                 <Box
                     styleSheet={{
                         position: 'relative',
                         display: 'flex',
                         flex: 1,
                         height: '80%',
-                        backgroundColor: appConfig.theme.colors.neutrals[999],
+                        backgroundColor: appConfig.theme.colors.neutrals[700],
                         flexDirection: 'column',
                         borderRadius: '5px',
                         padding: '16px',
                     }}
                 >
-
                     <MessageList mensagens={listaDeMensagens} />
                      
 
                     <Box
+
                         as="form"
                         styleSheet={{
                             display: 'flex',
@@ -107,9 +199,16 @@ export default function ChatPage() {
                                 color: appConfig.theme.colors.neutrals['700'],
                             }}
                         />
+                        <ButtonSendSticker 
+                       onStickerClick={(sticker)=>{
+                        handleNovaMensagem(":sticker:"+sticker)
+                       }}
+                               
+                            
+                            />
         <Button
                 type='submit'
-                onClick={botaoMensagem}
+                onClick = {botaoMensagem}
                 label='Enviar'
                 position='relative'
                 buttonColors={{
@@ -119,6 +218,7 @@ export default function ChatPage() {
                   mainColorStrong: appConfig.theme.colors.primary[600],
                 }}
               />
+         
                     </Box>
             
                 </Box>
@@ -146,8 +246,7 @@ function Header() {
 }
 
 function MessageList(props) {
-    console.log(props.listaDeMensagens);
-    return (
+      return (
         <Box
             tag="ul"
             styleSheet={{
@@ -170,7 +269,7 @@ function MessageList(props) {
                             marginBottom: '12px',
                             listStyleType: 'none',
                             hover: {
-                                backgroundColor: appConfig.theme.colors.neutrals[700],
+                                backgroundColor: appConfig.theme.colors.neutrals[200],
                             }
                         }}
                     >
@@ -203,8 +302,25 @@ function MessageList(props) {
                                 {(new Date().toLocaleDateString())}
                             </Text>
                         </Box>
-                        {mensagem.texto}
+                        {/*Condicional: {mensagem.texto.startsWith(':sticker:').toString()*/}
+                        {mensagem.texto.startsWith(':sticker:')
+                        
+                        ? (
+                            <Image 
+                            
+                            styleSheet={{
+                                maxWidth: '300px',
+                               
+                                borderRadius: '5%',
+                                display: 'inline-block',
+                                marginRight: '8px',
+                            }}src={mensagem.texto.replace(':sticker:','')}/>
+                        )
+                            :(
+                        mensagem.texto
+                        )}      
                     </Text>
+                    
                 );
 
             })}

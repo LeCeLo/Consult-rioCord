@@ -3,6 +3,7 @@ import appConfig from '../config.json';
 import React from'react';
 import {useRouter} from 'next/router';
 
+
 function Titulo(props) {
     const Tag = props.tag || 'h1';
     return (
@@ -36,10 +37,18 @@ function Titulo(props) {
   
   //export default HomePage
   export default function PaginaInicial() {
+    
     //const username = 'omariosouto';
     const [username, setUsername] = React.useState('');
     const roteamento=useRouter();
-
+    let escreveUsuario;
+    if (username.length > 0){
+      escreveUsuario = `https://www.github.com/${username}.png`;
+    }else{
+      escreveUsuario = 'https://cdn-icons-png.flaticon.com/512/4646/4646084.png';
+    }
+    
+   
   
     return (
       <>
@@ -48,7 +57,7 @@ function Titulo(props) {
           styleSheet={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             backgroundColor: appConfig.theme.colors.neutrals['300'],
-            backgroundImage: 'url(https://images.pexels.com/photos/6712474/pexels-photo-6712474.jpeg)',
+            backgroundImage: appConfig.fundoInicio,
             backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
           }}
         >
@@ -72,7 +81,7 @@ function Titulo(props) {
               as="form"
               onSubmit={function(infosDoEvento){
                 infosDoEvento.preventDefault();
-                window.location.href='/chat';
+                roteamento.push(`/chat?username=${username}`)
               }}
               styleSheet={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -141,7 +150,7 @@ function Titulo(props) {
                   borderRadius: '50%',
                   marginBottom: '16px',
                 }}
-                src={`https://github.com/${username}.png`}
+                src={`${escreveUsuario}`}
               />
               <Text
                 variant="body4"
@@ -161,4 +170,8 @@ function Titulo(props) {
       </>
     );
   }
-  
+  fetch('https://api.github.com/users/lecelo')
+    .then(async(respostaDoServidor) =>{
+      const respostaEsperada = await respostaDoServidor.json();
+      console.log (respostaEsperada);
+    })
